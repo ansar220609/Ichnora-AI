@@ -1,2 +1,2 @@
 ﻿# Ichnora-AI
-print(Ichnora AI)
+
