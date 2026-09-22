@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="ru"><head>
+
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0B0F17"><title>ICHNORA AI · Fraud intelligence</title>
 <link rel="icon" type="image/svg+xml" href="assets/ichnora-emblem.svg">
 <link rel="stylesheet" href="app.css"><script src="world.js" defer></script><script src="core.js" defer></script><script src="app.js" defer></script>
@@ -24,4 +25,7 @@
 </header>
 <main id="content"><h1 id="page-title" class="sr-only">Панель риск-аналитика</h1><button id="export-all" class="sr-only" disabled>Выгрузить CSV</button><div id="app" aria-busy="true"><div class="panel loading">Подготовка данных. Первый запуск может занять несколько секунд.</div></div><noscript>Для работы приложения включите JavaScript.</noscript><footer><strong>ICHNORA Engine v1.0.4</strong> · Local risk model &amp; Explainable AI · Учебный прототип: решения не отправляются в банк. <a href="#upload">Данные и методика →</a></footer></main>
 <dialog id="audit" aria-labelledby="audit-title"><div id="audit-content"></div></dialog><div id="toast" role="status" aria-live="polite"></div>
+<div id="root"></div>
+  <script src="./core.js"></script>
+  <script src="./app.js"></script>
 </body></html>

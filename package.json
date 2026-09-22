@@ -1,9 +1,15 @@
 {
+    "homepage": "https://ansar220609.github.io/Ichnora-AI",
     "name": "ichnora-local-mvp",
     "private": true,
     "version": "0.2.0",
-    "scripts": { "test": "node scripts/check.cjs && node scripts/check-ui.cjs", "map:build": "node scripts/prepare-map.cjs" },
-	"devDependencies": {
-		"jsdom": "^30.1.0"
-	}
+    "scripts": {
+        "test": "node scripts/check.cjs && node scripts/check-ui.cjs",
+        "map:build": "node scripts/prepare-map.cjs",
+        "deploy": "gh-pages -d dist"
+    },
+    "devDependencies": {
+        "gh-pages": "^6.3.0",
+        "jsdom": "^30.1.0"
+    }
 }
