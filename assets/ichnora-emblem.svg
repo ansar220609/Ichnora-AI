@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">ICHNORA AI emblem</title>
+  <desc id="desc">A circular Ichnora security emblem with electric-blue chevrons.</desc>
+  <g fill="none" stroke="#F9FAFB" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="80" cy="80" r="72" stroke-width="5"/>
+    <circle cx="80" cy="80" r="61" stroke-width="3" opacity=".92"/>
+    <path d="M80 8l7 11H73zM152 80l-11 7V73zM80 152l-7-11h14zM8 80l11-7v14z" stroke-width="2.5"/>
+  </g>
+  <path fill="#3B82F6" d="M48 52h64v25L80 46 48 77zm0 33 32-31 32 31v23L80 77 48 108zm0 33 32-31 32 31v22H48z"/>
+  <path fill="#0B0F17" d="M75 63h10v52H75z"/>
+</svg>

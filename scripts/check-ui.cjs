@@ -1,0 +1,25 @@
+const {JSDOM,VirtualConsole}=require('jsdom');
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');const errors=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
+const dom=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'),{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
+const w=dom.window,d=w.document,$=id=>d.getElementById(id);w.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};w.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};
+const downloads=[];w.URL.createObjectURL=blob=>{downloads.push(blob);return 'blob:mock';};w.URL.revokeObjectURL=()=>{};w.HTMLAnchorElement.prototype.click=function(){};
+for(const f of ['world.js','core.js','app.js'])w.eval(fs.readFileSync(path.join(root,f),'utf8'));
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const route=async id=>{w.location.hash=id;await wait(80);};
+const input=(id,value)=>{const e=$(id);e.value=value;e.dispatchEvent(new w.Event('input',{bubbles:true}));};
+(async()=>{
+  await wait(200);assert.equal($('app').getAttribute('aria-busy'),'false');assert($('dataset-status').textContent.includes('100'));
+  const before=$('decision-rows').textContent;input('sensitivity','100');assert.notEqual($('decision-rows').textContent,before);assert($('matrix').textContent.includes('FP'));$('reset-policy').click();
+  await route('transactions');assert.equal($('transaction-rows').children.length,25);$('next').click();assert($('page-count').textContent.includes('2 из'));input('search','no-such-transaction');await wait(150);assert($('transaction-rows').textContent.includes('Ничего'));$('clear-filters').click();
+  d.querySelector('[data-audit]').click();assert($('audit').open);assert($('audit-content').textContent.includes('log-odds'));$('report-txt').click();assert(downloads.length>0);$('close-audit').click();
+  await route('simulator');assert.equal(d.querySelector('select[name=country]').options.length,249);d.querySelector('[data-preset=safe]').click();assert($('sim-result').textContent.includes('Approve'));d.querySelector('[data-preset=takeover]').click();assert($('sim-result').textContent.includes('Block'));$('add-operation').click();assert($('add-operation').disabled);assert($('dataset-status').textContent.includes('001'));
+  d.querySelector('[data-preset=social]').click();assert($('sim-result').textContent.includes('Challenge'));d.querySelector('[data-preset=travel]').click();assert($('sim-result').textContent.includes('Approve'));
+  await route('analytics');assert.equal(d.querySelectorAll('[data-country]').length,177);const old=$('world-layer').getAttribute('transform');$('zoom-in').click();assert.notEqual($('world-layer').getAttribute('transform'),old);$('map-country').value='JP';$('map-country').dispatchEvent(new w.Event('change'));assert($('country-detail').textContent.includes('Япония'));assert($('link-group').options.length>0);$('country-transactions').click();await wait(100);assert.equal($('country-filter').value,'JP');
+  await route('analytics');$('link-type').value='device';$('link-type').dispatchEvent(new w.Event('change'));$('network-transactions').click();await wait(100);assert($('search').value.startsWith('device:'));assert(!$('transaction-rows').textContent.includes('Ничего'));
+  await route('upload');const example=w.FraudCore.exportCSV(w.FraudCore.generate(8,887,'SAMPLE'));const fake={name:'sample.csv',size:example.length,text:async()=>example};Object.defineProperty($('csv-file'),'files',{configurable:true,value:[fake]});$('csv-file').dispatchEvent(new w.Event('change'));await wait(150);assert($('upload-feedback').textContent.includes('8'));assert($('dataset-status').textContent.includes('sample.csv'));
+  const invalid={name:'bad.csv',size:10,text:async()=>'id,amount\nx,-1'};Object.defineProperty($('csv-file'),'files',{configurable:true,value:[invalid]});$('csv-file').dispatchEvent(new w.Event('change'));await wait(100);assert($('upload-feedback').className.includes('error'));assert($('dataset-status').textContent.includes('sample.csv'));
+  await route('dashboard');assert($('kpis').textContent.includes('8'));assert.equal(errors.length,0,errors.join('\n'));
+  console.log('PASS UI: navigation, sensitivity, pagination, search, report downloads, 4 presets, simulator add, map zoom/selection, CSV import and failed-import recovery.');
+  dom.window.close();
+})().catch(e=>{console.error(e);dom.window.close();process.exitCode=1;});
