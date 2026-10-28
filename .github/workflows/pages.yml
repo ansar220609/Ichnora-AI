@@ -1,4 +1,4 @@
-name: Deploy Ichnora to GitHub Pages
+name: Deploy Ichnora offline page
 
 on:
   push:
@@ -29,10 +29,10 @@ jobs:
         with:
           enablement: true
 
-      - name: Upload site
+      - name: Upload offline page
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: site-offline
 
       - name: Deploy
         id: deployment
